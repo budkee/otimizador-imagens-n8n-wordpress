@@ -1,0 +1,441 @@
+{
+  "name": "otimizador de imagens",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        416,
+        -16
+      ],
+      "id": "27461a7f-207f-4e70-a406-25ece5df4e4e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iTHSDGWgTBma5del",
+          "name": "Google Drive account | OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "13dnmLiq0sfp5bsYWfEhmNUiwh1kO08FG",
+          "mode": "list",
+          "cachedResultName": "entrada",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/13dnmLiq0sfp5bsYWfEhmNUiwh1kO08FG"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7716a1b9-282e-4e10-9661-1bd36262732d",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iTHSDGWgTBma5del",
+          "name": "Google Drive account | OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive Trigger').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1swEfWQhJjMlarmPghn8mHoCaNYmC2XJN",
+          "mode": "list",
+          "cachedResultName": "erro",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1swEfWQhJjMlarmPghn8mHoCaNYmC2XJN"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        112
+      ],
+      "id": "90906d67-6f67-431f-88f8-5f8637a605fa",
+      "name": "Erro",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iTHSDGWgTBma5del",
+          "name": "Google Drive account | OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Google Drive Trigger').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "134mjK53_0DtHME_DHqcFdtRQRIBG5pcw",
+          "mode": "list",
+          "cachedResultName": "processadas",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/134mjK53_0DtHME_DHqcFdtRQRIBG5pcw"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        -176
+      ],
+      "id": "9bdd589f-4f41-4066-b726-44486063b79b",
+      "name": "processadas",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iTHSDGWgTBma5del",
+          "name": "Google Drive account | OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://image-optimizer:8000/optimize",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        -16
+      ],
+      "id": "ef57e1af-e85d-4f2f-ab03-c1c2b8aef2a8",
+      "name": "Otimizar as imagens"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1bd2c04e-3a5e-4d08-ac05-adcb6d686d07",
+              "leftValue": "={{ $json.mimeType }}",
+              "rightValue": "image/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f8816674-49f0-4936-87db-04ce7f4dc57d",
+      "name": "É Imagem?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c84f4f89-7229-49ed-9d72-426d60db3901",
+              "name": "status",
+              "value": "erro",
+              "type": "string"
+            },
+            {
+              "id": "1ff16f16-5cc9-491b-bd6f-31465ab733d6",
+              "name": "arquivo",
+              "value": "={{ $('Google Drive Trigger').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "2f9695ad-d975-46c6-937f-78f10b0b6e07",
+              "name": "drive_file_id",
+              "value": "={{ $('Google Drive Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "84ace893-0fba-4442-a672-8d3545e397e3",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1088,
+        112
+      ],
+      "id": "398d088b-3e40-43aa-9ce8-b87ceaa96fba",
+      "name": "Registrar Erro"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c84f4f89-7229-49ed-9d72-426d60db3901",
+              "name": "status",
+              "value": "sucesso",
+              "type": "string"
+            },
+            {
+              "id": "1ff16f16-5cc9-491b-bd6f-31465ab733d6",
+              "name": "arquivo",
+              "value": "={{ $('Google Drive Trigger').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "2f9695ad-d975-46c6-937f-78f10b0b6e07",
+              "name": "drive_file_id",
+              "value": "={{ $('Google Drive Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "94a7b261-be03-4dfe-b057-ea5781653d81",
+              "name": "wordpress_media_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "24fa2980-0d5f-4683-8228-4ecbc68f40a5",
+              "name": "wordpress_url",
+              "value": "={{ $json.source_url }}",
+              "type": "string"
+            },
+            {
+              "id": "84ace893-0fba-4442-a672-8d3545e397e3",
+              "name": "timestamp",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1088,
+        -176
+      ],
+      "id": "e21566f1-c0ee-4468-804c-c0925ad2b221",
+      "name": "Registrar sucesso"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://escoladeartes.ufms.br/wp-json/wp/v2/media",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "title",
+              "value": "Teste n8n"
+            },
+            {
+              "name": "alt_text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        -16
+      ],
+      "id": "65e56820-df65-420d-9f3a-ff2e04772b68",
+      "name": "Upload no Wordpress",
+      "retryOnFail": true,
+      "alwaysOutputData": false,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "n4GgoZ9GkxtYIPQl",
+          "name": "WordPress - Escola de Artes UFMS"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Otimizar as imagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "É Imagem?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Otimizar as imagens": {
+      "main": [
+        [
+          {
+            "node": "Upload no Wordpress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É Imagem?": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar Erro": {
+      "main": [
+        [
+          {
+            "node": "Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar sucesso": {
+      "main": [
+        [
+          {
+            "node": "processadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload no Wordpress": {
+      "main": [
+        [
+          {
+            "node": "Registrar sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1c06dd4a-2df6-4f30-8ad5-7176e640b86f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af7526f0865c1a410190077c563c438b9f75bf2ce25d78d2514733c2569d9773"
+  },
+  "id": "VEwJlXg4jCNSC1P4",
+  "tags": [
+    {
+      "updatedAt": "2026-07-25T02:14:30.886Z",
+      "createdAt": "2026-07-25T02:14:30.886Z",
+      "id": "kdh4B4Jv82iR5fFr",
+      "name": "dica-automations"
+    }
+  ]
+}
