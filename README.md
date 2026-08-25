@@ -125,3 +125,7 @@ Para contribuir:
 Antes de enviar sua contribuição, procure verificar se já existe uma issue relacionada ao que você pretende modificar. Caso não exista, você também pode abrir uma nova issue para explicar o problema, apresentar uma sugestão ou discutir uma possível implementação.
 
 Não se preocupe se ainda está começando: contribuições de diferentes níveis de experiência são bem-vindas. Se tiver dúvidas sobre como contribuir, consulte a documentação do projeto ou entre em contato.
+
+## Melhorias
+
+1. Ajustar para que a automação retire ou crie o [Texto alternativo, Título, Legenda e Descrição]
